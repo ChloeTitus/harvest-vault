@@ -93,10 +93,12 @@ contract HarvestVault is SepoliaConfig {
     /// @param buyer The buyer address to authorize
     /// @param batchId The batch ID to grant access to
     function authorizeBuyer(address buyer, uint256 batchId) external {
+        require(buyer != address(0), "Invalid buyer address");
         require(batchId < _batches.length, "Batch does not exist");
         HarvestBatch storage batch = _batches[batchId];
         require(batch.owner == msg.sender, "Only owner can authorize buyers");
         require(batch.isActive, "Batch is not active");
+        require(!_authorizedBuyers[msg.sender][buyer], "Buyer already authorized");
 
         _authorizedBuyers[msg.sender][buyer] = true;
 
