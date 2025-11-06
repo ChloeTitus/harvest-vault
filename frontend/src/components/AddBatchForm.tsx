@@ -35,6 +35,16 @@ export const AddBatchForm = ({ onBatchCreated }: AddBatchFormProps) => {
       return;
     }
 
+    if (formData.cropType.trim().length < 2) {
+      toast.error('Crop type must be at least 2 characters long');
+      return;
+    }
+
+    if (formData.farmer.trim().length < 2) {
+      toast.error('Farmer name must be at least 2 characters long');
+      return;
+    }
+
     if (!address) {
       toast.error('Please connect your wallet');
       return;
