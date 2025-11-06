@@ -109,6 +109,32 @@ contract HarvestVault is SepoliaConfig {
         emit BuyerAuthorized(msg.sender, buyer, batchId);
     }
 
+    /// @notice Authorize a buyer to access all farmer's active batches
+    /// @param buyer The buyer address to authorize for all batches
+    function authorizeBuyerForAllBatches(address buyer) external {
+        require(buyer != address(0), "Invalid buyer address");
+        require(!_authorizedBuyers[msg.sender][buyer], "Buyer already authorized");
+
+        uint256[] memory farmerBatches = _batchesOf[msg.sender];
+        uint256 authorizedCount = 0;
+
+        for (uint256 i = 0; i < farmerBatches.length; i++) {
+            uint256 batchId = farmerBatches[i];
+            HarvestBatch storage batch = _batches[batchId];
+
+            if (batch.isActive) {
+                FHE.allow(batch.encryptedPesticideUsage, buyer);
+                FHE.allow(batch.encryptedYield, buyer);
+                authorizedCount++;
+            }
+        }
+
+        require(authorizedCount > 0, "No active batches to authorize");
+        _authorizedBuyers[msg.sender][buyer] = true;
+
+        emit BuyerAuthorized(msg.sender, buyer, type(uint256).max); // Use max uint for all batches
+    }
+
     /// @notice Check if a buyer is authorized to access farmer's batches
     /// @param farmer The farmer address
     /// @param buyer The buyer address
