@@ -265,4 +265,53 @@ describe("HarvestVault", function () {
     expect(batchIds[1]).to.eq(1);
     expect(batchIds[2]).to.eq(2);
   });
+
+  it("should authorize buyer for all active batches", async function () {
+    // Create multiple batches
+    const pesticideUsage = 250;
+    const yieldAmount = 450000;
+
+    for (let i = 0; i < 3; i++) {
+      const encryptedPesticideUsage = await fhevm
+        .createEncryptedInput(harvestVaultContractAddress, signers.farmer.address)
+        .add32(pesticideUsage)
+        .encrypt();
+
+      const encryptedYield = await fhevm
+        .createEncryptedInput(harvestVaultContractAddress, signers.farmer.address)
+        .add32(yieldAmount)
+        .encrypt();
+
+      const pesticideProof = encryptedPesticideUsage.inputProof;
+      const yieldProof = encryptedYield.inputProof;
+
+      const tx = await harvestVaultContract
+        .connect(signers.farmer)
+        .createBatch(
+          `Crop${i}`,
+          `2024-00${i}`,
+          `Farmer${i}`,
+          encryptedPesticideUsage.handles[0],
+          encryptedYield.handles[0],
+          pesticideProof,
+          yieldProof
+        );
+      await tx.wait();
+    }
+
+    // Authorize buyer for all batches
+    const tx = await harvestVaultContract
+      .connect(signers.farmer)
+      .authorizeBuyerForAllBatches(signers.buyer.address);
+    await tx.wait();
+
+    // Verify buyer is authorized
+    const isAuthorized = await harvestVaultContract.isBuyerAuthorized(signers.farmer.address, signers.buyer.address);
+    expect(isAuthorized).to.be.true;
+
+    // Try to authorize again (should fail)
+    await expect(
+      harvestVaultContract.connect(signers.farmer).authorizeBuyerForAllBatches(signers.buyer.address)
+    ).to.be.revertedWith("Buyer already authorized");
+  });
 });
