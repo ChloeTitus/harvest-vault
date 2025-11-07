@@ -82,7 +82,12 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
 
   const handleAuthorizeBuyer = async () => {
     if (!authorizeBuyerAddress || !ethers.isAddress(authorizeBuyerAddress)) {
-      toast.error('Invalid buyer address');
+      toast.error('Please enter a valid Ethereum address');
+      return;
+    }
+
+    if (authorizeBuyerAddress.toLowerCase() === address?.toLowerCase()) {
+      toast.error('Cannot authorize yourself as a buyer');
       return;
     }
 
@@ -92,7 +97,17 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
       setShowAuthorizeForm(false);
       toast.success('Buyer authorized successfully!');
     } catch (error: any) {
-      toast.error(`Failed to authorize buyer: ${error.message}`);
+      console.error('Authorization error:', error);
+      const errorMessage = error.reason || error.message || 'Unknown error occurred';
+      if (errorMessage.includes('Only owner can authorize')) {
+        toast.error('You are not the owner of this batch');
+      } else if (errorMessage.includes('Buyer already authorized')) {
+        toast.error('This buyer is already authorized');
+      } else if (errorMessage.includes('gas')) {
+        toast.error('Transaction failed due to gas issues. Please try again.');
+      } else {
+        toast.error(`Authorization failed: ${errorMessage}`);
+      }
     }
   };
 
