@@ -116,17 +116,23 @@ contract HarvestVault is SepoliaConfig {
         require(!_authorizedBuyers[msg.sender][buyer], "Buyer already authorized");
 
         uint256[] memory farmerBatches = _batchesOf[msg.sender];
-        uint256 authorizedCount = 0;
+        require(farmerBatches.length > 0, "No batches found for this farmer");
 
-        for (uint256 i = 0; i < farmerBatches.length; i++) {
+        uint256 authorizedCount = 0;
+        uint256 length = farmerBatches.length;
+
+        // Use unchecked for gas optimization in loop
+        for (uint256 i = 0; i < length;) {
             uint256 batchId = farmerBatches[i];
             HarvestBatch storage batch = _batches[batchId];
 
             if (batch.isActive) {
                 FHE.allow(batch.encryptedPesticideUsage, buyer);
                 FHE.allow(batch.encryptedYield, buyer);
-                authorizedCount++;
+                unchecked { authorizedCount++; }
             }
+
+            unchecked { i++; }
         }
 
         require(authorizedCount > 0, "No active batches to authorize");
