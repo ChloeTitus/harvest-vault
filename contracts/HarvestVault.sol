@@ -43,6 +43,18 @@ contract HarvestVault is SepoliaConfig {
         uint256 indexed batchId
     );
 
+    event BatchDeactivated(
+        address indexed owner,
+        uint256 indexed batchId,
+        uint64 deactivatedAt
+    );
+
+    event BulkAuthorizationCompleted(
+        address indexed farmer,
+        address indexed buyer,
+        uint256 authorizedBatchCount
+    );
+
     /// @notice Create a new harvest batch with encrypted data
     /// @param cropType Plaintext crop type (e.g., "Wheat")
     /// @param batchNumber Plaintext batch number (e.g., "2024-001")
@@ -139,6 +151,7 @@ contract HarvestVault is SepoliaConfig {
         _authorizedBuyers[msg.sender][buyer] = true;
 
         emit BuyerAuthorized(msg.sender, buyer, type(uint256).max); // Use max uint for all batches
+        emit BulkAuthorizationCompleted(msg.sender, buyer, authorizedCount);
     }
 
     /// @notice Check if a buyer is authorized to access farmer's batches
