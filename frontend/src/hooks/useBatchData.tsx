@@ -6,12 +6,24 @@ import { HarvestVaultAddresses } from "@/abi/HarvestVaultAddresses";
 import { useChainId } from "wagmi";
 
 interface BatchMeta {
-  owner: string;
+  owner: `0x${string}`;
   cropType: string;
   batchNumber: string;
   farmer: string;
   date: bigint;
   isActive: boolean;
+}
+
+// Type guard for batch meta tuple
+function isBatchMetaTuple(data: unknown): data is readonly [string, string, string, string, bigint, boolean] {
+  return Array.isArray(data) &&
+         data.length === 6 &&
+         typeof data[0] === 'string' &&
+         typeof data[1] === 'string' &&
+         typeof data[2] === 'string' &&
+         typeof data[3] === 'string' &&
+         typeof data[4] === 'bigint' &&
+         typeof data[5] === 'boolean';
 }
 
 export function useBatchMeta(batchId: number | undefined) {
@@ -37,23 +49,22 @@ export function useBatchMeta(batchId: number | undefined) {
   // getBatchMeta returns: (address owner, string cropType, string batchNumber, string farmer, uint64 date, bool isActive)
   const meta = useMemo(() => {
     if (!metaRaw) return undefined;
-    
-    // Debug: log the raw data format
-    console.log(`[useBatchData] Batch ${batchId} raw meta:`, metaRaw, 'Type:', typeof metaRaw, 'IsArray:', Array.isArray(metaRaw));
-    
-    // Handle tuple/array return format
-    if (Array.isArray(metaRaw)) {
-      const parsed = {
-        owner: metaRaw[0] as string,
-        cropType: metaRaw[1] as string,
-        batchNumber: metaRaw[2] as string,
-        farmer: metaRaw[3] as string,
-        date: metaRaw[4] as bigint,
-        isActive: metaRaw[5] as boolean,
+
+    // Use type guard for safer parsing
+    if (isBatchMetaTuple(metaRaw)) {
+      const [owner, cropType, batchNumber, farmer, date, isActive] = metaRaw;
+      return {
+        owner: owner as `0x${string}`,
+        cropType,
+        batchNumber,
+        farmer,
+        date,
+        isActive,
       };
-      console.log(`[useBatchData] Batch ${batchId} parsed meta:`, parsed);
-      return parsed;
     }
+
+    // Fallback for object format (if wagmi returns it as an object)
+    if (typeof metaRaw === 'object' && 'owner' in metaRaw && 'cropType' in metaRaw) {
     
     // Handle object format (if wagmi returns it as an object)
     if (typeof metaRaw === 'object' && 'owner' in metaRaw) {
