@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -33,9 +33,10 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
 
   // Check if current user is the owner of this batch
   // Normalize addresses for comparison
-  const normalizedOwner = meta?.owner?.toLowerCase()?.trim();
-  const normalizedAddress = address?.toLowerCase()?.trim();
-  const isOwner = Boolean(normalizedOwner && normalizedAddress && normalizedOwner === normalizedAddress);
+  const isOwner = useMemo(() => {
+    if (!meta?.owner || !address) return false;
+    return meta.owner.toLowerCase().trim() === address.toLowerCase().trim();
+  }, [meta?.owner, address]);
   
   // Debug logging (remove in production)
   useEffect(() => {
@@ -80,7 +81,7 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
     }
   };
 
-  const handleAuthorizeBuyer = async () => {
+  const handleAuthorizeBuyer = useCallback(async () => {
     if (!authorizeBuyerAddress || !ethers.isAddress(authorizeBuyerAddress)) {
       toast.error('Please enter a valid Ethereum address');
       return;
@@ -109,7 +110,7 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
         toast.error(`Authorization failed: ${errorMessage}`);
       }
     }
-  };
+  }, [authorizeBuyerAddress, address, authorizeBuyer, batchId]);
 
   if (isLoadingMeta) {
     return (
