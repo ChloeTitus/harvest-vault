@@ -314,4 +314,49 @@ describe("HarvestVault", function () {
       harvestVaultContract.connect(signers.farmer).authorizeBuyerForAllBatches(signers.buyer.address)
     ).to.be.revertedWith("Buyer already authorized");
   });
+
+  it("should reject invalid addresses in bulk authorization", async function () {
+    // Create a batch first
+    const encryptedPesticideUsage = await fhevm
+      .createEncryptedInput(harvestVaultContractAddress, signers.farmer.address)
+      .add32(250)
+      .encrypt();
+
+    const encryptedYield = await fhevm
+      .createEncryptedInput(harvestVaultContractAddress, signers.farmer.address)
+      .add32(450000)
+      .encrypt();
+
+    const pesticideProof = encryptedPesticideUsage.inputProof;
+    const yieldProof = encryptedYield.inputProof;
+
+    await harvestVaultContract
+      .connect(signers.farmer)
+      .createBatch(
+        "TestCrop",
+        "TEST-001",
+        "TestFarmer",
+        encryptedPesticideUsage.handles[0],
+        encryptedYield.handles[0],
+        pesticideProof,
+        yieldProof
+      );
+
+    // Test invalid zero address
+    await expect(
+      harvestVaultContract.connect(signers.farmer).authorizeBuyerForAllBatches(ethers.ZeroAddress)
+    ).to.be.revertedWith("Invalid buyer address");
+
+    // Test farmer trying to authorize themselves
+    await expect(
+      harvestVaultContract.connect(signers.farmer).authorizeBuyerForAllBatches(signers.farmer.address)
+    ).to.be.revertedWith("Buyer already authorized");
+  });
+
+  it("should handle bulk authorization with no active batches", async function () {
+    // Farmer with no batches tries to authorize buyer
+    await expect(
+      harvestVaultContract.connect(signers.farmer).authorizeBuyerForAllBatches(signers.buyer.address)
+    ).to.be.revertedWith("No batches found for this farmer");
+  });
 });
