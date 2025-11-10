@@ -9,6 +9,11 @@ import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /// @dev Public data (cropType, batchNumber, farmer, date) is stored in plaintext for listing
 ///      Sensitive data (pesticideUsage, yield) is encrypted using FHE
 contract HarvestVault is SepoliaConfig {
+    // Constants for gas optimization
+    uint256 private constant MAX_BATCHES_PER_FARMER = 1000;
+    uint256 private constant PESTICIDE_DECIMALS = 100; // For kg/hectare precision
+    uint256 private constant YIELD_DECIMALS = 1; // For kg precision
+
     struct HarvestBatch {
         address owner;                    // Farmer address
         string cropType;                  // Plaintext: e.g., "Wheat", "Corn"
@@ -73,6 +78,8 @@ contract HarvestVault is SepoliaConfig {
         bytes calldata pesticideProof,
         bytes calldata yieldProof
     ) external returns (uint256 batchId) {
+        require(_batchesOf[msg.sender].length < MAX_BATCHES_PER_FARMER, "Maximum batches per farmer exceeded");
+
         // Convert external encrypted inputs to internal encrypted values
         euint32 pesticideUsage = FHE.fromExternal(encPesticideUsage, pesticideProof);
         euint32 yield = FHE.fromExternal(encYield, yieldProof);
