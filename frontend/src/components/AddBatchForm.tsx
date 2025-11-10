@@ -100,10 +100,10 @@ export const AddBatchForm = ({ onBatchCreated }: AddBatchFormProps) => {
   const isLoading = fhevmStatus === 'loading' || isPending;
 
   return (
-    <Card className="border-2 border-primary/20">
+    <Card className="border-2 border-primary/20" role="region" aria-labelledby="batch-form-title">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Plus className="w-5 h-5" />
+        <CardTitle id="batch-form-title" className="flex items-center gap-2">
+          <Plus className="w-5 h-5" aria-hidden="true" />
           Add New Harvest Batch
         </CardTitle>
         <CardDescription>
@@ -111,7 +111,7 @@ export const AddBatchForm = ({ onBatchCreated }: AddBatchFormProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" role="form" aria-label="Create harvest batch form">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="cropType">Crop Type *</Label>
@@ -119,6 +119,7 @@ export const AddBatchForm = ({ onBatchCreated }: AddBatchFormProps) => {
                 value={formData.cropType}
                 onValueChange={(value) => setFormData({ ...formData, cropType: value })}
                 disabled={isLoading}
+                aria-describedby="cropType-help"
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select crop type" />
