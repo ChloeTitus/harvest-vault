@@ -8,6 +8,18 @@ import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /// @notice Stores encrypted harvest batch data where pesticide usage and yield are protected by FHE encryption
 /// @dev Public data (cropType, batchNumber, farmer, date) is stored in plaintext for listing
 ///      Sensitive data (pesticideUsage, yield) is encrypted using FHE
+///
+/// @dev Data Format Specifications:
+/// - Pesticide Usage: Stored as uint32 where value = kg/hectare * 100 (e.g., 2.5 kg/ha = 250)
+/// - Yield: Stored as uint32 in kg (e.g., 4500 kg = 4500)
+/// - Dates: Stored as uint64 Unix timestamps
+/// - Authorization: Uses ACL-based permission system for decryption access
+///
+/// @dev Security Considerations:
+/// - All sensitive data is encrypted on-chain using FHE
+/// - Decryption requires explicit buyer authorization from farmer
+/// - Contract uses Zama FHEVM for cryptographic operations
+/// - Maximum 1000 batches per farmer to prevent gas limit issues
 contract HarvestVault is SepoliaConfig {
     // Constants for gas optimization
     uint256 private constant MAX_BATCHES_PER_FARMER = 1000;
