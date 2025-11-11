@@ -74,17 +74,19 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="batches" className="space-y-6">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div>
-                <h3 className="text-2xl font-bold text-foreground">Harvest Batches</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground">Harvest Batches</h3>
+                <p className="text-sm sm:text-base text-muted-foreground">
                   {totalCount > 0
                     ? `Showing all ${totalCount} batch${totalCount === 1 ? '' : 'es'}`
                     : "No batches available yet"}
                 </p>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full sm:w-auto"
                 onClick={() => setRefreshKey(prev => prev + 1)}
               >
                 Refresh
