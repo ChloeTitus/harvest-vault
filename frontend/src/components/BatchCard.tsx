@@ -41,6 +41,8 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
   // Debug logging (remove in production)
   useEffect(() => {
     if (meta && address) {
+      const normalizedOwner = meta.owner?.toLowerCase().trim();
+      const normalizedAddress = address.toLowerCase().trim();
       console.log(`[BatchCard ${batchId}] Ownership Check:`, {
         owner: normalizedOwner,
         currentAddress: normalizedAddress,
@@ -49,7 +51,7 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
         addressLength: normalizedAddress?.length
       });
     }
-  }, [batchId, meta, address, isOwner, normalizedOwner, normalizedAddress]);
+  }, [batchId, meta, address, isOwner]);
   
   const hasEncryptedData = encryptedPesticideUsage && 
                            encryptedPesticideUsage !== ethers.ZeroHash &&
@@ -144,26 +146,35 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
                      (!showDecrypted || !decryptedPesticideUsage || !decryptedYield);
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/50">
-      <CardHeader>
+    <Card className="card-hover border-2 hover:border-primary/50 relative overflow-hidden group animate-fade-in-up">
+      {/* Animated gradient background on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-accent/0 group-hover:from-primary/5 group-hover:via-primary/3 group-hover:to-accent/5 transition-all duration-500" />
+      
+      {/* Glow effect on hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 glow-green rounded-lg" />
+      
+      <CardHeader className="relative z-10">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg flex items-center gap-2">
-              {meta.cropType}
+            <CardTitle className="text-lg flex items-center gap-2 group-hover:text-primary transition-colors duration-300">
+              <span className="text-2xl">{meta.cropType === 'Wheat' ? '🌾' : meta.cropType === 'Corn' ? '🌽' : meta.cropType === 'Potato' ? '🥔' : meta.cropType === 'Apple' ? '🍎' : meta.cropType === 'Carrot' ? '🥕' : '🌾'}</span>
+              <span>{meta.cropType}</span>
               {hasEncryptedData ? (
-                <Lock className="w-4 h-4 text-green-500" />
+                <Lock className="w-4 h-4 text-green-500 animate-pulse-glow" />
               ) : (
                 <Unlock className="w-4 h-4 text-gray-400" />
               )}
             </CardTitle>
-            <CardDescription>Batch #{meta.batchNumber}</CardDescription>
+            <CardDescription className="group-hover:text-foreground transition-colors duration-300">
+              Batch #{meta.batchNumber}
+            </CardDescription>
           </div>
-          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 group-hover:bg-primary/20 group-hover:border-primary/50 transition-all duration-300">
             {new Date(Number(meta.date) * 1000).toLocaleDateString()}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 relative z-10">
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Farmer:</span>
@@ -300,24 +311,33 @@ export const BatchCard = ({ batchId }: BatchCardProps) => {
       </CardContent>
       
       {hasEncryptedData && (
-        <CardFooter>
+        <CardFooter className="relative z-10">
           <Button
             onClick={handleDecrypt}
             disabled={!canDecrypt || isDecrypting}
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 relative overflow-hidden group"
           >
+            {/* Shimmer effect */}
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+            
             {isDecrypting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Decrypting...
               </>
             ) : !address ? (
-              'Connect Wallet to Decrypt'
+              <>
+                <Lock className="w-4 h-4 mr-2" />
+                Connect Wallet to Decrypt
+              </>
             ) : fhevmStatus !== 'ready' ? (
-              'Initializing Encryption...'
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Initializing Encryption...
+              </>
             ) : (
               <>
-                <Unlock className="w-4 h-4 mr-2" />
+                <Unlock className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
                 {showDecrypted && decryptedPesticideUsage && decryptedYield ? 'Data Decrypted' : 'Decrypt Data'}
               </>
             )}

@@ -100,17 +100,20 @@ export const AddBatchForm = ({ onBatchCreated }: AddBatchFormProps) => {
   const isLoading = fhevmStatus === 'loading' || isPending;
 
   return (
-    <Card className="border-2 border-primary/20" role="region" aria-labelledby="batch-form-title">
-      <CardHeader>
-        <CardTitle id="batch-form-title" className="flex items-center gap-2">
-          <Plus className="w-5 h-5" aria-hidden="true" />
+    <Card className="border-2 border-primary/20 glass shadow-xl hover:shadow-2xl transition-all duration-500 animate-fade-in-up relative overflow-hidden group" role="region" aria-labelledby="batch-form-title">
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-accent/0 to-secondary/0 group-hover:from-primary/5 group-hover:via-accent/3 group-hover:to-secondary/5 transition-all duration-500" />
+      
+      <CardHeader className="relative z-10">
+        <CardTitle id="batch-form-title" className="flex items-center gap-2 text-2xl gradient-text">
+          <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" aria-hidden="true" />
           Add New Harvest Batch
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-base mt-2">
           Log your harvest data with FHE encryption. All sensitive data will be encrypted before being stored on-chain.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="relative z-10">
         <form onSubmit={handleSubmit} className="space-y-4" role="form" aria-label="Create harvest batch form">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -200,9 +203,12 @@ export const AddBatchForm = ({ onBatchCreated }: AddBatchFormProps) => {
 
           <Button 
             type="submit" 
-            className="w-full" 
+            className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 relative overflow-hidden group/btn" 
             disabled={isLoading || fhevmStatus !== 'ready' || !address}
           >
+            {/* Shimmer effect */}
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000" />
+            
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -210,7 +216,7 @@ export const AddBatchForm = ({ onBatchCreated }: AddBatchFormProps) => {
               </>
             ) : (
               <>
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-4 h-4 mr-2 group-hover/btn:rotate-90 transition-transform duration-300" />
                 Add Encrypted Batch
               </>
             )}
