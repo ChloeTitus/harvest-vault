@@ -4,7 +4,7 @@ import { Sparkles } from 'lucide-react';
 
 export const Header = () => {
   return (
-    <header className="border-b border-border/50 glass-dark sticky top-0 z-50 shadow-lg">
+    <header className="border-b border-primary/20 bg-gradient-to-r from-primary/10 via-background/95 to-accent/10 backdrop-blur-md sticky top-0 z-50 shadow-lg">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3 min-w-0 flex-1 group">
           <div className="relative">

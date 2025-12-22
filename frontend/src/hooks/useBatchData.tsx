@@ -65,9 +65,6 @@ export function useBatchMeta(batchId: number | undefined) {
 
     // Fallback for object format (if wagmi returns it as an object)
     if (typeof metaRaw === 'object' && 'owner' in metaRaw && 'cropType' in metaRaw) {
-    
-    // Handle object format (if wagmi returns it as an object)
-    if (typeof metaRaw === 'object' && 'owner' in metaRaw) {
       console.log(`[useBatchData] Batch ${batchId} object meta:`, metaRaw);
       return metaRaw as BatchMeta;
     }

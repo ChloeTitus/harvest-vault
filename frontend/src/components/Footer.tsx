@@ -21,7 +21,7 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="border-t border-border/50 glass-dark mt-auto relative overflow-hidden">
+    <footer className="border-t border-primary/20 bg-gradient-to-r from-accent/10 via-background/95 to-primary/10 backdrop-blur-md mt-auto relative overflow-hidden">
       {/* Animated gradient line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent animate-shimmer" />
       
