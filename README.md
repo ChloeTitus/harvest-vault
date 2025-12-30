@@ -6,8 +6,8 @@ A privacy-preserving agricultural data management system built on blockchain usi
 
 ## 🌐 Live Demo
 
-- **🌍 Vercel Deployment**: [https://encrypted-harvest-vault.vercel.app/](https://encrypted-harvest-vault.vercel.app/)
-- **📹 Demo Video**: [encrypted-harvest-vault.mp4](https://github.com/ChloeTitus/harvest-vault/blob/main/encrypted-harvest-vault.mp4)
+- **🌍 Vercel Deployment**: [https://encrypted-harvest-pro.vercel.app/](https://encrypted-harvest-pro.vercel.app/)
+- **📹 Demo Video**: [encrypted-harvest-vault.mp4](https://youtu.be/2lB3HCJSQG0)
 - **📦 GitHub Repository**: [https://github.com/ChloeTitus/harvest-vault](https://github.com/ChloeTitus/harvest-vault)
 
 ## 📋 Table of Contents
